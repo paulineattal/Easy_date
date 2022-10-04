@@ -75,6 +75,8 @@ sum_rates = df[["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]
 print(sum_rates>100)
 sum_rates.plot.box()
 
+df_new.to_csv("clean.csv")
+
 import matplotlib.pyplot as plt
 import numpy as np
 train = df_new.copy()
