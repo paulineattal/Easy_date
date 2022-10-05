@@ -73,6 +73,9 @@ def select_model(modeles, X, y) :
         scores = []
         rmse = []
         ft = []
+        f1 = []
+        recall=[]
+        precision=[]
         df_ft = pd.DataFrame(columns = X.columns.to_list())
 
         for train_index, test_index in kf.split(X):
