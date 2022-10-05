@@ -28,13 +28,12 @@ df = pd.read_csv("./clean.csv", sep=",")
 match_wave = df[["wave", "match"]].groupby("wave").sum("match").reset_index()
 
 
-#Présentation du nombre de visite total de chaque monument regroupé par sites
 colors = {
     'background': '#111111',
     'text': '#7FDBFF'
 }
 
-fig = px.bar(match_wave, x="wave", y="match", color="wave", barmode="group") #typage du graphe
+fig = px.bar(match_wave, x="wave", y="match", color="match", barmode="group") #typage du graphe
 
 fig.update_layout(
     plot_bgcolor=colors['background'],
@@ -50,13 +49,13 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             'color': colors['text']
         }),
 
-    html.Div(children='Présentation du nombre de visite total de chaque monument regroupé par sites', style={
+    html.Div(children='Présentation du nombre de match par vague', style={
         'textAlign': 'center',
         'color': colors['text']
     }),
 
     dcc.Graph(
-        id='Nb_vistes_par_monument-sites',
+        id='match-eave',
         figure=fig
     )
 ])
