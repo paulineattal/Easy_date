@@ -8,7 +8,6 @@ Created on Wed Oct  5 09:12:28 2022
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import mean, std
 from catboost import CatBoostRegressor
 from sklearn.model_selection import KFold
 import seaborn as sns
@@ -16,22 +15,15 @@ from sklearn.metrics import mean_squared_error
 
 
 #dir_save le meme que dans le fichier simu_acquisition
-dir_save = "/home/cognidis/Documents/stage_2/data_pred/"
-by_stop= pd.read_csv(dir_save + "data_init.csv")
-
-by_stop["avg_arrival"] = by_stop["avg_arrival"].fillna(0)
-by_stop["avg_start"] = by_stop["avg_start"].fillna(0)
+data = pd.read_csv("./clean.csv", sep=",")
 
 
 #ne pas mettre de variables corrélées pour la regression linéaire
-by_stop = by_stop[['avg_arrival', 'stop_id', 'freq_by_stop', 'Ind_by_intersect', 'size_ent_by_stop']].set_index('stop_id')
-X = by_stop[by_stop.columns[1:]] # var descriptives
-y = by_stop["avg_arrival"] # var cible
+X = data.copy().drop(columns=["Unnamed: 0", "match"]) # var descriptives
+y = data["match"] # var cible
 
 #si je garde toutes les variables, 
 #mais faut voir si le modèle accepte que nos variables soit correlées ou non.
-#X = by_stop[by_stop.columns[1:-2]] # var descriptives
-#y = by_stop["avg_arrival"] # var cible
 
 
 modeles_list = [
