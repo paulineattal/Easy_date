@@ -2,9 +2,14 @@ from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
+import gunicorn 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='EasyDate Michael Scott Team')
+# Reference the underlying flask app (Used by gunicorn webserver in Heroku production deployment)
+server = app.server 
 
+# Enable Whitenoise for serving static files from Heroku (the /static folder is seen as root by Heroku) 
+server.wsgi_app = WhiteNoise(server.wsgi_app, root='static/') 
 df = pd.read_csv("trainClean.csv")
 
 #SideBar
