@@ -1,1 +1,1 @@
-web: gunicorn easydateapp:app
+web: gunicorn app:server --timeout 300
