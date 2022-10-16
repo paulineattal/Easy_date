@@ -7,7 +7,7 @@ import gunicorn
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='EasyDate Michael Scott Team')
 server = app.server 
 
-df = pd.read_csv("trainClean.csv")
+df = pd.read_csv("./datas/trainClean.csv")
 
 #SideBar
 TABPANEL = dbc.Container([
