@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
-df = pd.read_csv("./trainGraph.csv", sep=",")
+df = pd.read_csv("../datas/trainGraph.csv", sep=",")
 df1=df.drop_duplicates(subset=['iid'])
 X=df1[["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]]
 
