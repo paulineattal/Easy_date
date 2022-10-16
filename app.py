@@ -21,7 +21,7 @@ df_2['goal_cat'] = np.select(conditions, values)
 conditions = [
     (df_2['age'] > min(df_2["age"])) & (df_2['age'] <= 22),
     (df_2['age'] > 22) & (df_2['age'] <= 30),
-    (df_['age'] > 30)
+    (df_2['age'] > 30)
     ]
 values = ['young', 'adult', 'old']
 
