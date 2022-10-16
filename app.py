@@ -2,12 +2,39 @@ from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
+import numpy as np
 import gunicorn 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='EasyDate Michael Scott Team')
 server = app.server 
 
 df = pd.read_csv("./datas/trainClean.csv")
+df_2 = pd.read_csv("./datas/trainGraph.csv", sep=",")
+
+conditions = [
+    (df_2['goal'] == 1) | (df_2['goal'] == 2),
+    (df_2['goal'] == 4) | (df_2['goal'] == 3),
+    (df_2['goal'] == 5) | (df_2['goal'] == 6)
+    ]
+values = ['fun', 'serious', 'pass time']
+df_2['goal_cat'] = np.select(conditions, values)
+conditions = [
+    (df_2['age'] > min(df_2["age"])) & (df_2['age'] <= 22),
+    (df_2['age'] > 22) & (df_2['age'] <= 30),
+    (df_['age'] > 30)
+    ]
+values = ['young', 'adult', 'old']
+
+df_2['age_cat'] = np.select(conditions, values)
+df_2["culture_interest"]=np.where(df_2['culture']>=6, 'yes_culture', 'no_culture')
+df_2["indoors_interest"]=np.where(df_2['indoors']>=6, 'yes_indoors', 'no_indoors')
+df_2["sport_interest"]=np.where(df_2['sport']>=6, 'yes_sport', 'no_sport')
+df_2["social_interest"]=np.where(df_2['social']>=6, 'yes_social', 'no_social')
+df_2["most_interest"]=df_2[["culture","indoors","sport","social"]].idxmax(axis=1)
+df_2["gender"]=df_2["gender"].replace(0, "women")
+df_2["gender"]=df_2["gender"].replace(1, "men")
+df_men = df_2[df_2["gender"]=="men"]
+df_women = df_2[df_2["gender"]=="women"]
 
 #SideBar
 TABPANEL = dbc.Container([
@@ -92,7 +119,14 @@ def update_graph(xInput, yInput, colorInput):
                      y=yInput,
                      color=colorInput,
                      barmode="group")
-    return fig
+    fig_men = px.sunburst(df_men, path=['most_interest', 'goal_cat', 'age_cat'],
+                  values='income', color='income'
+                 )
+    fig_women = px.sunburst(df_women, path=['most_interest', 'goal_cat', 'age_cat'],
+                  values='income', color='income'
+                 )
+
+    return fig, fig_men, fig_women
 
 
 if __name__ == '__main__':
