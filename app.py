@@ -70,7 +70,9 @@ PageContent = dbc.Container([
             dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", className="app-DivFilter--Select_value")], 
             className="DivFilter"
         ),
-        dcc.Graph(id="GraphStat_1")
+        dcc.Graph(id="GraphStat_1"),
+        dcc.Graph(id="GraphStat_2"),
+        dcc.Graph(id="GraphStat_3")
     ], className="DivTab"),
 
     #Page Modélisation
@@ -109,16 +111,16 @@ def render_tab_content(active_tab):
     return "No tab selected"
 
 
-@app.callback(Output('GraphStat_1', 'figure'),
+@app.callback(Output('GraphStat_1','figure'), Output('GraphStat_2','figure'), Output("GraphStat_3", "figure"),
     [Input('xInput', 'value'), Input('yInput', 'value'), Input('colorInput', 'value')])
 def update_graph(xInput, yInput, colorInput):
     
     dfg = df.groupby(by=[xInput,colorInput])[yInput].mean().reset_index()
     dfg[colorInput] = dfg[colorInput].astype(str)
     fig = px.bar(dfg, x=xInput,
-                     y=yInput,
-                     color=colorInput,
-                     barmode="group")
+                      y=yInput,
+                      color=colorInput,
+                      barmode="group")
     fig_men = px.sunburst(df_men, path=['most_interest', 'goal_cat', 'age_cat'],
                   values='income', color='income'
                  )
