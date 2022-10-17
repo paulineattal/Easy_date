@@ -10,5 +10,5 @@ Plusieurs fichiers sont spécifiques et necessaires pour le fonctionnement de l'
 `runtime.txt` : indique à Heroku (le serveur HTTP Gunicorn) quelle version de Python utiliser <br>
 `Procfile` indique à Heroku quel type de processus va s'exécuter (processus Web Gunicorn) et le point d'entrée de l'application Python (app.py) <br>
 `/assets` contient le CSS du dash <br>
-`/models` contient le modele de prediction des match et le code de selection du meilleur modele 
+`/models` contient le modele de prediction des match et le code de selection du meilleur modele <br>
 `/datas` contient tous les fichiers CSV utils pour les graphes et les predictions
