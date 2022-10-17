@@ -9,15 +9,23 @@ class PrepDatas:
         return self.__df
     
     def get_df_men(self):
-        return self.__df[self.__df["gender"]=="men"]
+        df = self.__df.drop_duplicates(subset=['iid'])
+        return df[df["gender"]=="men"]
         
     def get_df_women(self):
-        return self.__df[self.__df["gender"]=="women"]
+        df = self.__df.drop_duplicates(subset=['iid'])
+        return df[df["gender"]=="women"]
     
     def get_df_boxplot(self):
         attrs_box=["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]
         return self.__df[attrs_box].rename(columns={'attr1_1':'Attirant', 'sinc1_1':'Sincere','intel1_1':'Intelligent','fun1_1': 'Fun','amb1_1':'Ambitieux', 'shar1_1':'Interets Communs'})
     
+    def get_df_word(self):
+        df = self.__df.drop_duplicates(subset=['iid'])
+        df = df[['sports','tvsports','exercise','dining','museums','art','hiking','gaming','clubbing','reading','tv','theater','movies','concerts','music','shopping']]
+        df = df.mean(skipna=True)
+        return df
+        
     def build_df_graphes(self):
         df=self.__df
 
@@ -51,8 +59,3 @@ class PrepDatas:
         df["gender"]=df["gender"].replace(1, "men")
         
         self.__df=df
-        
-    
-        
-        
-    

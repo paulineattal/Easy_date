@@ -1,18 +1,19 @@
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
+import plotly.tools as pltTools
 import plotly.express as px
-import pandas as pd
-import gunicorn 
-from prepdatas import PrepDatas
 import plotly.graph_objects as go
+import pandas as pd
+import pickle
+import sklearn
+import base64
+import io
+from prepdatas import PrepDatas
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
+app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], title='EasyDate Michael Scott Team')
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='EasyDate Michael Scott Team')
-server = app.server 
-
-#get all df from PrepData class for graphs
 df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
 pds = PrepDatas(df_graphes)
 pds.build_df_graphes()
@@ -20,11 +21,55 @@ df=pds.get_df()
 df_men=pds.get_df_men()
 df_women = pds.get_df_women()
 df_boxplot = pds.get_df_boxplot()
+df_word = pds.get_df_word()
 
+fig_plot = go.Figure()
+for xd, yd, cls in zip(df_boxplot.columns, [df_boxplot[i].to_list() for i in df_boxplot.columns], ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)','rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']):
+        fig_plot.add_trace(go.Box(
+            y=yd,
+            name=xd,
+            boxpoints='all',
+            jitter=0.5,
+            whiskerwidth=0.2,
+            fillcolor=cls,
+            marker_size=2
+                )
+        )
+fig_plot.update_layout(
+    title='Importance de plusieurs critères lors du choix d\'un partenaire',
+    yaxis=dict(
+        autorange=True,
+        showgrid=True,
+        zeroline=True,
+        dtick=5,
+        gridcolor='rgb(255, 255, 255)',
+        gridwidth=1,
+        zerolinecolor='rgb(255, 255, 255)',
+        zerolinewidth=2,
+    ),
+    margin=dict(
+        l=40,
+        r=30,
+        b=80,
+        t=100,
+    ),
+    paper_bgcolor='rgb(243, 243, 243)',
+    plot_bgcolor='rgb(243, 243, 243)',
+    showlegend=False
+)
 
-#SideBar
+wc = WordCloud(width=800, height=400, max_words=200).generate_from_frequencies(df_word)
+
+plt.figure(figsize=(10, 10))
+plt.imshow(wc, interpolation='bilinear')
+plt.axis('off')
+plt.savefig("./assets/word.png")
+
+loaded_model = pickle.load(open("model.pickle.dat", 'rb'))
+
+#Menu
 TABPANEL = dbc.Container([
-    html.H1("Menu"),
+    html.H1("AI Match X Easy Date"),
     html.Hr(),
     dbc.Tabs(
         [
@@ -37,46 +82,104 @@ TABPANEL = dbc.Container([
         active_tab="Accueil",
     )
 ])
-
+        
 #Contenu
 PageContent = dbc.Container([
 
     #Accueil
-    html.Div(id="Accueil-tab", children=
+    html.Div([
         html.Div(
-            html.P("Accueil")
-        )
-    ),
+            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
+        html.Div([
+            html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
+            html.P(["Easy Date est une société d'événementiel qui organise des speed dating. Lors des 17 vagues de speed dating, 452 célibataires ont tenté de trouver l'amour!", html.Br(),
+                    "De nombreuses données ont été récoltés pendant ces speed dating et Easy Date voudrait un modèle prédictif pour savoir si deux personnes sont compatibles prior à leur rencontre "], style={'textAlign': 'left'}),
+            html.Img(src=r'assets/logo.png', alt='image', width="200"),
+        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'}),
+        html.Div([
+            html.P("AI Match",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
+            html.P(["AI Match est une équipe formée de 4 data scientists spécialisés dans les modèles prédictifs.", html.Br(),
+                    " Grâce aux données nos data scientists ont réussi à répondre à la demande du client."], style={'textAlign': 'left'}),
+            html.Img(src=r'assets/logo2.png', alt='image', width="200"),
+        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'})
+    ], id="Accueil-tab"),
 
     #Page Statistique
-    html.Div(id="Statistique-tab", children=[
+    html.Div([
         html.Div([
-            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df.columns], value="age", className="app-DivFilter--Select_value"),
-            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df.columns], value="income", className="app-DivFilter--Select_value"),
-            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", className="app-DivFilter--Select_value")], 
-            className="DivFilter"
-        ),
+            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df.columns], value="age", style=({"width":"100%"})),
+            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df.columns], value="income", style=({"width":"100%"})),
+            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", style=({"width":"100%"}))
+        ], id="DivFilter", style=({"display":"flex"})),
         dcc.Graph(id="GraphStat_1"),
-        dcc.Graph(id="GraphStat_2"),
-        dcc.Graph(id="GraphStat_3"),
-        dcc.Graph(id="GraphStat_4")
-    ], className="DivTab"),
+        html.Div([
+            dcc.Graph(figure=px.sunburst(df_men, path=['most_interest', 'goal_cat', 'age_cat'],
+                    values='income', color='income'), style=({"width":"50%"})),
+            dcc.Graph(figure=px.sunburst(df_women, path=['most_interest', 'goal_cat', 'age_cat'],
+                    values='income', color='income'), style=({"width":"50%"})),
+            dcc.Graph(figure=fig_plot),
+            html.Img(src=r'assets/word.png', alt='image', width="200")
+        ], id="DivSunBurst")        
+    ], id="Statistique-tab"),
 
     #Page Modélisation
-    html.Div(id="Modelisation-tab", children=
+    html.Div([
         html.Div(
-            html.P("Modelisation")
-        )
-    ),
+            html.P("Explication du modèle prédictif",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
+        html.Div([
+            html.P("Boosting",style={'color': 'pink','fontSize': 20}),
+            html.P(["Le boosting est une méthode qui permet de transformer les apprenants faibles en apprenants forts. La procédure commence par former des arbres de décision. Chaque observation  se voit attribuer un poids égal", html.Br(),                
+                    "Après avoir analysé le premier arbre, on augmente le poids de chaque observation difficle à classer et on diminue le poids des observations qui n'ont pas posé de problème.",html.Br(),
+                    "Le prochain arbre est donc construit sur les données pondérées ce qui améliore les prévisions du premier arbre."]),
+                ]),
+        html.Div([html.Img(src=r'assets/boosting.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        html.Div([
+            html.P("Boosting de gradient",style={'color': 'pink','fontSize': 20}),
+            html.P(["Le boosting de gradient est une catégorie de boosting.", html.Br(),                
+                    "Il repose fortement sur la prédiction que le prochain modèle réduira les erreurs de prédiction lorsqu’il sera mélangé avec les précédents. L’idée principale est d’établir des résultats cibles pour le prochain modèle afin de minimiser les erreurs.",html.Br(),
+                    ""])]),
+        html.Div([html.Img(src=r'assets/boosting_gradient.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'})
+    ], id="Modelisation-tab"),
 
     #Page prédiction
-    html.Div(id="Prediction-tab", children=
-        html.Div(
-            html.P("Prediction")
-        )
-    )
+    html.Div([
+        html.H4("Fichier de prédiction"),
+        dcc.Upload(
+            html.Div([
+                'Drag and Drop or ',
+                html.A('Select Files')
+            ]),
+            style={
+                'width': '100%',
+                'height': '100px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin': '10px'
+            },
+            id='uploadData',
+        ),
+        html.Div(id='outputPrediction'),
+        html.Div([
+            html.H4("Formulaire de prédiction"),
+            dcc.Input(id="int_corr", type="number", placeholder="Score d'interet commun ('int_corr')", style=({"width":"72%", "margin":"5px"})),
+            dcc.Input(id="age", type="number", placeholder="Age du participant ('age')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="age_o", type="number", placeholder="Age du partenaire ('age_o')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="attr1_1", type="number", placeholder="Note attribuée à l'attirance par le participant ('attr1_1')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="attr_o", type="number", placeholder="Note attribuée à l'attirance par le partenaire ('attr_o')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="fun1_1", type="number", placeholder="Note attribuée au fun par le participant ('fun1_1')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="fun_o", type="number", placeholder="Note attribuée au fun par le partenaire ('fun_o')", style=({"width":"35%", "margin":"5px"})),
+            dcc.Input(id="income", type="number", placeholder="Revenu du participant ('income')", style=({"width":"72%", "margin":"5px"})),
+            html.Button('Valider', id='validFormPredict')
+        ], id="formPrediction"),
+        html.Div([
+            html.H4("Prédiction"),
+            html.P(id="predFromForm")
+        ], id="renderPrediction")
+    ], id="Prediction-tab")
 ])
-
 
 #Apparence
 app.layout = html.Div([TABPANEL, PageContent])
@@ -98,66 +201,40 @@ def render_tab_content(active_tab):
     return "No tab selected"
 
 
-@app.callback(Output('GraphStat_1','figure'), Output('GraphStat_2','figure'), Output("GraphStat_3", "figure"),  Output("GraphStat_4", "figure"),
+@app.callback(Output('GraphStat_1', 'figure'),
     [Input('xInput', 'value'), Input('yInput', 'value'), Input('colorInput', 'value')])
 def update_graph(xInput, yInput, colorInput):
-    
-    ###graphbar###
-    dfg = df.groupby(by=[xInput,colorInput])[yInput].mean().reset_index()
-    dfg[colorInput] = dfg[colorInput].astype(str)
-    fig = px.bar(dfg, x=xInput,
-                      y=yInput,
-                      color=colorInput,
-                      barmode="group")
-    
-    ###sunburst###
-    fig_men = px.sunburst(df_men, path=['most_interest', 'goal_cat', 'age_cat'],
-                  values='income', color='income'
-                 )
-    fig_women = px.sunburst(df_women, path=['most_interest', 'goal_cat', 'age_cat'],
-                  values='income', color='income'
-                 )
-    
-    ###boxplot###
-    fig_plot = go.Figure()
-    for xd, yd, cls in zip(df_boxplot.columns, [df_boxplot[i].to_list() for i in df_boxplot.columns], ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)','rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']):
-            fig_plot.add_trace(go.Box(
-                y=yd,
-                name=xd,
-                boxpoints='all',
-                jitter=0.5,
-                whiskerwidth=0.2,
-                fillcolor=cls,
-                marker_size=2
-                 )
-            )
-    fig_plot.update_layout(
-        title='Importance de plusieurs critères lors du choix d\'un partenaire',
-        yaxis=dict(
-            autorange=True,
-            showgrid=True,
-            zeroline=True,
-            dtick=5,
-            gridcolor='rgb(255, 255, 255)',
-            gridwidth=1,
-            zerolinecolor='rgb(255, 255, 255)',
-            zerolinewidth=2,
-        ),
-        margin=dict(
-            l=40,
-            r=30,
-            b=80,
-            t=100,
-        ),
-        paper_bgcolor='rgb(243, 243, 243)',
-        plot_bgcolor='rgb(243, 243, 243)',
-        showlegend=False
-    )
-    ###graph words###
-    
+    fig = px.scatter(df, x=xInput,
+                     y=yInput,
+                     color=colorInput)
+    return fig
 
-    return fig, fig_men, fig_women, fig_plot
+@app.callback(Output('outputPrediction', 'children'),
+              Input('uploadData', 'contents'))
+def update_output(contents):
+    if contents is not None:
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        test = pd.read_csv(io.StringIO(decoded.decode('utf-8')))[['int_corr', 'age_o', 'age', 'attr_o', 'attr1_1', 'fun_o', 'fun1_1', 'income']]
+        predictions = loaded_model.predict(test)
+        children = [
+            html.P(predictions)
+        ]
+        return children
 
+@app.callback(
+    Output('predFromForm', 'children'),
+    Input('validFormPredict', 'n_clicks'),
+    [State('int_corr', 'value'), State('age_o', 'value'), State('age', 'value'), State('attr_o', 'value'), State('attr1_1', 'value'),
+    State('fun_o', 'value'), State('fun1_1', 'value'), State('income', 'value')]
+)
+def update_output(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1, income):
+    test = pd.DataFrame({"int_corr":int_corr,"age_o":age_o,"age":age,"attr_o":attr_o,"attr1_1":attr1_1,"fun_o":fun_o,"fun1_1":fun1_1,"income":income})
+    predictions = loaded_model.predict(test)
+    children = [
+        html.P(predictions)
+    ]
+    return children
 
 if __name__ == '__main__':
     app.run_server(debug=True)
