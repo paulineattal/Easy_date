@@ -8,35 +8,19 @@ Created on Wed Oct 12 16:34:26 2022
 import tkinter as tk
 import pandas as pd
 import plotly.graph_objects as go
-import numpy as np
 
 #Importation du jeu de données et découpage en un plus petit jeu de données.
 df = pd.read_csv("../datas/trainGraph.csv", sep=",")
-df1=df.drop_duplicates(subset=['iid'])
-X=df1[["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]]
-
-
-#Définition des deux axes du graph
-x_data = ['Attirant', 'Sincere',
-          'Intelligent', 'Fun',
-          'Ambitieux', 'Interets Communs',]
-
-y0 = df1['attr1_1'].astype(np.int)
-y1 = df1['sinc1_1'].astype(np.int)
-y2 = df1['intel1_1'].astype(np.int)
-y3 = df1['fun1_1'].astype(np.int)
-y4 = df1['amb1_1'].astype(np.int)
-y5 = df1['shar1_1'].astype(np.int)
-y_data = [y0, y1, y2, y3, y4, y5]
+df=df.drop_duplicates(subset=['iid'])
+attrs_box=["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]
+df = df[attrs_box].rename(columns={'attr1_1':'Attirant', 'sinc1_1':'Sincere','intel1_1':'Intelligent','fun1_1': 'Fun','amb1_1':'Ambitieux', 'shar1_1':'Interets Communs'})
 
 #Définition des couleurs de chaque boite a moustache
 colors = ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)',
           'rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']
 
-#Affichage du graph
 fig = go.Figure()
-
-for xd, yd, cls in zip(x_data, y_data, colors):
+for xd, yd, cls in zip(df.columns, [df[i].to_list() for i in df.columns], colors):
         fig.add_trace(go.Box(
             y=yd,
             name=xd,

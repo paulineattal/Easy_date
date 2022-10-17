@@ -1,6 +1,6 @@
 import numpy as np
 
-class PrepData:
+class PrepDatas:
     
     def __init__(self, df):
         self.__df = df
@@ -13,6 +13,10 @@ class PrepData:
         
     def get_df_women(self):
         return self.__df[self.__df["gender"]=="women"]
+    
+    def get_df_boxplot(self):
+        attrs_box=["attr1_1", "sinc1_1", "intel1_1", "fun1_1", "amb1_1", "shar1_1"]
+        return self.__df[attrs_box].rename(columns={'attr1_1':'Attirant', 'sinc1_1':'Sincere','intel1_1':'Intelligent','fun1_1': 'Fun','amb1_1':'Ambitieux', 'shar1_1':'Interets Communs'})
     
     def build_df_graphes(self):
         df=self.__df
@@ -35,7 +39,7 @@ class PrepData:
         values_age = ['young', 'adult', 'old']
         df['age_cat'] = np.select(conditions_age, values_age)
         
-    
+        
         df["culture_interest"]=np.where(df['culture']>=6, 'yes_culture', 'no_culture')
         df["indoors_interest"]=np.where(df['indoors']>=6, 'yes_indoors', 'no_indoors')
         df["sport_interest"]=np.where(df['sport']>=6, 'yes_sport', 'no_sport')
@@ -48,3 +52,7 @@ class PrepData:
         
         self.__df=df
         
+    
+        
+        
+    
