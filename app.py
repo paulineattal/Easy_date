@@ -2,24 +2,43 @@ from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
-import gunicorn 
-from prepdata import PrepData
+import numpy as np
+#import gunicorn 
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title='EasyDate Michael Scott Team')
+app = Dash(__name__, external_stylesheets=[dbc.themes.LUX], title='EasyDate Michael Scott Team')
 server = app.server 
 
-#get all df from PrepData class for graphs
-df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
-pd = PrepData(df_graphes)
-pd.build_df_graphes()
-df=pd.get_df()
-df_men=pd.get_df_men()
-df_women = pd.get_df_women()
+df = pd.read_csv("./datas/trainClean.csv")
+df_2 = pd.read_csv("./datas/trainGraph.csv", sep=",")
 
+conditions = [
+    (df_2['goal'] == 1) | (df_2['goal'] == 2),
+    (df_2['goal'] == 4) | (df_2['goal'] == 3),
+    (df_2['goal'] == 5) | (df_2['goal'] == 6)
+    ]
+values = ['fun', 'serious', 'pass time']
+df_2['goal_cat'] = np.select(conditions, values)
+conditions = [
+    (df_2['age'] > min(df_2["age"])) & (df_2['age'] <= 22),
+    (df_2['age'] > 22) & (df_2['age'] <= 30),
+    (df_2['age'] > 30)
+    ]
+values = ['young', 'adult', 'old']
+
+df_2['age_cat'] = np.select(conditions, values)
+df_2["culture_interest"]=np.where(df_2['culture']>=6, 'yes_culture', 'no_culture')
+df_2["indoors_interest"]=np.where(df_2['indoors']>=6, 'yes_indoors', 'no_indoors')
+df_2["sport_interest"]=np.where(df_2['sport']>=6, 'yes_sport', 'no_sport')
+df_2["social_interest"]=np.where(df_2['social']>=6, 'yes_social', 'no_social')
+df_2["most_interest"]=df_2[["culture","indoors","sport","social"]].idxmax(axis=1)
+df_2["gender"]=df_2["gender"].replace(0, "women")
+df_2["gender"]=df_2["gender"].replace(1, "men")
+df_men = df_2[df_2["gender"]=="men"]
+df_women = df_2[df_2["gender"]=="women"]
 
 #SideBar
 TABPANEL = dbc.Container([
-    html.H1("Menu"),
+    html.H1("AI Match X Easy Date"),
     html.Hr(),
     dbc.Tabs(
         [
@@ -37,11 +56,24 @@ TABPANEL = dbc.Container([
 PageContent = dbc.Container([
 
     #Accueil
-    html.Div(id="Accueil-tab", children=
+    html.Div(id="Accueil-tab", children=[
         html.Div(
-            html.P("Accueil")
-        )
-    ),
+            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
+        html.Div([
+            html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
+            html.P(["Easy Date est une société d'événementiel qui organise des speed dating. Lors des 17 vagues de speed dating, 452 célibataires ont tenté de trouver l'amour!", html.Br(),
+                    "De nombreuses données ont été récoltés pendant ces speed dating et Easy Date voudrait un modèle prédictif pour savoir si deux personnes sont compatibles prior à leur rencontre "], style={'textAlign': 'left'}),
+            html.Img(src=r'assets/logo.png', alt='image', width="200"),
+        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'}),
+        html.Div([
+            html.P("AI Match",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
+            html.P(["AI Match est une équipe formée de 4 data scientists spécialisés dans les modèles prédictifs.", html.Br(),
+                    " Grâce aux données nos data scientists ont réussi à répondre à la demande du client."], style={'textAlign': 'left'}),
+            html.Img(src=r'assets/logo2.png', alt='image', width="200"),
+        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'})
+
+        ]),
+
 
     #Page Statistique
     html.Div(id="Statistique-tab", children=[
@@ -57,10 +89,24 @@ PageContent = dbc.Container([
     ], className="DivTab"),
 
     #Page Modélisation
-    html.Div(id="Modelisation-tab", children=
+    html.Div(id="Modelisation-tab", children=[
         html.Div(
-            html.P("Modelisation")
-        )
+            html.P("Explication du modèle prédictif",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
+        html.Div([
+            html.P("Boosting",style={'color': 'pink','fontSize': 20}),
+            html.P(["Le boosting est une méthode qui permet de transformer les apprenants faibles en apprenants forts. La procédure commence par former des arbres de décision. Chaque observation  se voit attribuer un poids égal", html.Br(),                
+                    "Après avoir analysé le premier arbre, on augmente le poids de chaque observation difficle à classer et on diminue le poids des observations qui n'ont pas posé de problème.",html.Br(),
+                    "Le prochain arbre est donc construit sur les données pondérées ce qui améliore les prévisions du premier arbre."]),
+                ]),
+        html.Div([html.Img(src=r'assets/boosting.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        html.Div([
+            html.P("Boosting de gradient",style={'color': 'pink','fontSize': 20}),
+            html.P(["Le boosting de gradient est une catégorie de boosting.", html.Br(),                
+                    "Il repose fortement sur la prédiction que le prochain modèle réduira les erreurs de prédiction lorsqu’il sera mélangé avec les précédents. L’idée principale est d’établir des résultats cibles pour le prochain modèle afin de minimiser les erreurs.",html.Br(),
+                    ""])]),
+        html.Div([html.Img(src=r'assets/boosting_gradient.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        ]
+           
     ),
 
     #Page prédiction
