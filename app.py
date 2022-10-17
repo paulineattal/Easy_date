@@ -1,16 +1,21 @@
+from prepdatas import PrepDatas
+
+import pandas as pd
+
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
-import plotly.tools as pltTools
+from dash.exceptions import PreventUpdate
+
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
+import matplotlib.pyplot as plt
+
 import pickle
-import sklearn
 import base64
 import io
-from prepdatas import PrepDatas
+
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], title='EasyDate Michael Scott Team')
 
@@ -63,7 +68,8 @@ wc = WordCloud(width=800, height=400, max_words=200).generate_from_frequencies(d
 plt.figure(figsize=(10, 10))
 plt.imshow(wc, interpolation='bilinear')
 plt.axis('off')
-plt.savefig("./assets/word.png")
+plt.margins(0,0)
+plt.savefig("./assets/word.png", bbox_inches = 'tight', pad_inches = 0)
 
 loaded_model = pickle.load(open("model/model.pickle.dat", 'rb'))
 
@@ -106,20 +112,28 @@ PageContent = dbc.Container([
 
     #Page Statistique
     html.Div([
+        html.H6("Graphique général pour l'exploration des données selon chaque variables", style=({"margin":"5px","text-align":"center"})),
         html.Div([
-            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df.columns], value="age", style=({"width":"100%"})),
-            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df.columns], value="income", style=({"width":"100%"})),
-            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", style=({"width":"100%"}))
+            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df.columns], value="age", style=({"width":"100%", "padding":"5px"})),
+            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df.columns], value="income", style=({"width":"100%", "padding":"5px"})),
+            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", style=({"width":"100%", "padding":"5px"}))
         ], id="DivFilter", style=({"display":"flex"})),
-        dcc.Graph(id="GraphStat_1"),
+        dcc.Graph(id="GraphStat_1", style=({"width":"100%", "margin":"5px"})),
+        html.H6("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"5px","text-align":"center"})),
         html.Div([
-            dcc.Graph(figure=px.sunburst(df_men, path=['most_interest', 'goal_cat', 'age_cat'],
-                    values='income', color='income'), style=({"width":"50%"})),
-            dcc.Graph(figure=px.sunburst(df_women, path=['most_interest', 'goal_cat', 'age_cat'],
-                    values='income', color='income'), style=({"width":"50%"})),
-            dcc.Graph(figure=fig_plot),
-            html.Img(src=r'assets/word.png', alt='image', width="200")
-        ], id="DivSunBurst")        
+            dcc.Graph(figure=px.sunburst(df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],
+                    values='income', color='income', template="plotly_dark").update_layout(
+                        margin=dict(l=5, r=5, t=50, b=5)
+                    ), style=({"width":"50%", "margin":"5px"})),
+            dcc.Graph(figure=px.sunburst(df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],
+                    values='income', color='income', template="plotly_dark").update_layout(
+                        margin=dict(l=5, r=5, t=50, b=5)
+                    ), style=({"width":"50%", "margin":"5px"})),
+        ], id="DivSunBurst", style=({"display":"flex"})),
+        html.H6("Boxplot de l'importance accordée au différents critères demandés", style=({"margin":"5px","text-align":"center"})),
+        dcc.Graph(figure=fig_plot, style=({"width":"100%", "margin":"5px"})),
+        html.H6("Nuage de mot de l'importance accordées au différentes activités demandées", style=({"margin":"5px","text-align":"center"})),
+        html.Img(src=r'assets/word.png', alt='image', style=({"display":"block","margin-left":"auto","margin-right":"auto","margin-top":"5px"})),
     ], id="Statistique-tab"),
 
     #Page Modélisation
@@ -143,7 +157,7 @@ PageContent = dbc.Container([
 
     #Page prédiction
     html.Div([
-        html.H4("Fichier de prédiction"),
+        html.H5("Fichier de prédiction", style=({"margin-top":"5px"})),
         dcc.Upload(
             html.Div([
                 'Drag and Drop or ',
@@ -163,7 +177,7 @@ PageContent = dbc.Container([
         ),
         html.Div(id='outputPrediction'),
         html.Div([
-            html.H4("Formulaire de prédiction"),
+            html.H5("Formulaire de prédiction"),
             dcc.Input(id="int_corr", type="number", placeholder="Score d'interet commun ('int_corr')", style=({"width":"72%", "margin":"5px"})),
             dcc.Input(id="age", type="number", placeholder="Age du participant ('age')", style=({"width":"35%", "margin":"5px"})),
             dcc.Input(id="age_o", type="number", placeholder="Age du partenaire ('age_o')", style=({"width":"35%", "margin":"5px"})),
@@ -172,12 +186,12 @@ PageContent = dbc.Container([
             dcc.Input(id="fun1_1", type="number", placeholder="Note attribuée au fun par le participant ('fun1_1')", style=({"width":"35%", "margin":"5px"})),
             dcc.Input(id="fun_o", type="number", placeholder="Note attribuée au fun par le partenaire ('fun_o')", style=({"width":"35%", "margin":"5px"})),
             dcc.Input(id="income", type="number", placeholder="Revenu du participant ('income')", style=({"width":"72%", "margin":"5px"})),
-            html.Button('Valider', id='validFormPredict')
+            html.Div(html.Button('Valider', id='validFormPredict', style=({"border": "2px solid #fff", "width":"20%", "margin-top":"5px"})))
         ], id="formPrediction"),
         html.Div([
-            html.H4("Prédiction"),
-            html.P(id="predFromForm")
-        ], id="renderPrediction")
+            html.H5("Prédiction", style=({"margin-top":"5px"})),
+            html.P(id="predictionFromForm", style=({"margin-top":"5px"}))
+        ], id="renderPrediction", style=({"display":"none"}))
     ], id="Prediction-tab")
 ])
 
@@ -206,12 +220,13 @@ def render_tab_content(active_tab):
 def update_graph(xInput, yInput, colorInput):
     fig = px.scatter(df, x=xInput,
                      y=yInput,
-                     color=colorInput)
+                     color=colorInput, 
+                     template="plotly_dark")
     return fig
 
 @app.callback(Output('outputPrediction', 'children'),
               Input('uploadData', 'contents'))
-def update_output(contents):
+def predFromFile(contents):
     if contents is not None:
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
@@ -223,18 +238,25 @@ def update_output(contents):
         return children
 
 @app.callback(
-    Output('predFromForm', 'children'),
+    [Output('predictionFromForm', 'children'), Output("renderPrediction", "style")],
     Input('validFormPredict', 'n_clicks'),
     [State('int_corr', 'value'), State('age_o', 'value'), State('age', 'value'), State('attr_o', 'value'), State('attr1_1', 'value'),
     State('fun_o', 'value'), State('fun1_1', 'value'), State('income', 'value')]
 )
-def update_output(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1, income):
-    test = pd.DataFrame({"int_corr":int_corr,"age_o":age_o,"age":age,"attr_o":attr_o,"attr1_1":attr1_1,"fun_o":fun_o,"fun1_1":fun1_1,"income":income})
-    predictions = loaded_model.predict(test)
-    children = [
-        html.P(predictions)
-    ]
-    return children
+def predFromForm(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1, income):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:    
+        test = pd.DataFrame({"int_corr":[int_corr],"age_o":[age_o],"age":[age],"attr_o":[attr_o],"attr1_1":[attr1_1],"fun_o":[fun_o],"fun1_1":[fun1_1],"income":[income]})
+        predictions = loaded_model.predict(test)
+        if predictions == [0]:
+            predictions = "Pas match :("
+        elif predictions == [1]:
+            predictions = "Match :D !"
+        children = [
+            html.P(predictions, style=({"margin-top":"5px"}))
+        ]
+        return children, {"display":"block"}
 
 if __name__ == '__main__':
     app.run_server(debug=True)
