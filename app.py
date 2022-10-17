@@ -65,7 +65,7 @@ plt.imshow(wc, interpolation='bilinear')
 plt.axis('off')
 plt.savefig("./assets/word.png")
 
-loaded_model = pickle.load(open("model.pickle.dat", 'rb'))
+loaded_model = pickle.load(open("model/model.pickle.dat", 'rb'))
 
 #Menu
 TABPANEL = dbc.Container([
