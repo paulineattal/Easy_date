@@ -16,7 +16,7 @@ import io
 import gunicorn
 
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], title='EasyDate Michael Scott Team')
+app = Dash(__name__, external_stylesheets=[dbc.themes.SLATE], title='EasyDate Michael Scott Team')
 server = app.server
 
 
@@ -29,6 +29,23 @@ df_women = pds.get_df_women()
 df_boxplot = pds.get_df_boxplot()
 df_word = pds.get_df_word()
 
+df_dropdown_x_y = df[['int_corr', 'age_o','attr_o', 'sinc_o','intel_o', 'fun_o', 'amb_o', 'shar_o', 
+                      'age', 'imprace', 'imprelig', 'income', 'sports', 'tvsports', 'exercise', 
+                      'dining', 'museums','art', 'hiking', 'gaming', 'clubbing', 'reading', 'tv', 
+                      'theater','movies', 'concerts', 'music', 'shopping', 'yoga', 'exphappy', 
+                      'expnum','attr1_1', 'sinc1_1', 'intel1_1', 'fun1_1', 'amb1_1', 'shar1_1']].rename(columns={"int_corr":"score d'interet commun", "age_o":"age p1","attr_o":"score attirance p1", 
+                 "sinc_o":"score sincerite p1","intel_o":"score intelligence p1", "fun_o":"score fun p1","amb_o":"score ambition p1",
+                 "shar_o":"score interet commun p1", "imprace":"importance origine commune","imprelig":"importance religion commune",
+                 "income":"salaire","exphappy":"retour experience", "expnum":"confiance experience",
+                 'attr1_1':"score attirance p2", 'sinc1_1':"score sincerite p2", 'intel1_1':"score intelligence p2", 'fun1_1':"score fun p2", 'amb1_1':"score ambition p2", 'shar1_1':"score interet commun p2"})
+
+
+df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd', 
+                      'race', 'goal', 'date', 'go_out']].rename(columns={"gender":"sexe","wave":"vague",
+                                                                                "race_o":"origine p1","goal":"objectif",
+                                                                                "field_cd":"code carriere","race":"origine p2",
+                                                                                "date":"freq rdv amoureux","go_out":"freq sortie"})
+
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
 fig_sunburst_men = fig.get_fig_sunburst_men()
 fig_sunburst_women = fig.get_fig_sunburst_women()
@@ -40,7 +57,7 @@ loaded_model = pickle.load(open("model/model.pickle.dat", 'rb'))
 
 #Menu
 TABPANEL = dbc.Container([
-    html.H1("AI Match X Easy Date"),
+    html.H1("AI Match X Easy Date", style=({"margin":"5px","text-align":"center"})),
     html.Hr(),
     dbc.Tabs(
         [
@@ -60,7 +77,7 @@ PageContent = dbc.Container([
     #Accueil
     html.Div([
         html.Div(
-            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
+            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 30})),
         html.Div([
             html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
             html.P(["Easy Date est une société d'événementiel qui organise des speed dating. Lors des 17 vagues de speed dating, 452 célibataires ont tenté de trouver l'amour!", html.Br(),
@@ -77,21 +94,21 @@ PageContent = dbc.Container([
 
     #Page Statistique
     html.Div([
-        html.H6("Graphique général pour l'exploration des données selon chaque variables", style=({"margin":"5px","text-align":"center"})),
+        html.H4("Graphique général pour l'exploration des données selon chaque variables", style=({"margin":"15px","text-align":"center"})),
         html.Div([
-            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df.columns], value="age", style=({"width":"100%", "padding":"5px"})),
-            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df.columns], value="income", style=({"width":"100%", "padding":"5px"})),
-            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df.columns], value="gender", style=({"width":"100%", "padding":"5px"}))
+            dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="age", style=({"width":"100%", "padding":"5px"})),
+            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="salaire", style=({"width":"100%", "padding":"5px"})),
+            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df_dropdown_mod.columns], value="sexe", style=({"width":"100%", "padding":"5px"}))
         ], id="DivFilter", style=({"display":"flex"})),
         dcc.Graph(id="GraphStat_1", style=({"width":"100%", "margin":"5px"})),
-        html.H6("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"5px","text-align":"center"})),
+        html.H4("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"15px","text-align":"center"})),
         html.Div([
             dcc.Graph(figure=fig_sunburst_men, style=({"width":"50%", "margin":"5px"})),
             dcc.Graph(figure=fig_sunburst_women, style=({"width":"50%", "margin":"5px"})),
         ], id="DivSunBurst", style=({"display":"flex"})),
-        html.H6("Boxplot de l'importance accordée au différents critères demandés", style=({"margin":"5px","text-align":"center"})),
+        html.H4("Boxplot de l'importance accordée au différents critères demandés", style=({"margin":"15px","text-align":"center"})),
         dcc.Graph(figure=fig_boxplot, style=({"width":"100%", "margin":"5px"})),
-        html.H6("Nuage de mot de l'importance accordées au différentes activités demandées", style=({"margin":"5px","text-align":"center"})),
+        html.H4("Nuage de mot de l'importance accordées au différentes activités demandées", style=({"margin":"15px","text-align":"center"})),
         html.Img(src=r'assets/word.png', alt='image', style=({"display":"block","margin-left":"auto","margin-right":"auto","margin-top":"5px"})),
     ], id="Statistique-tab"),
 

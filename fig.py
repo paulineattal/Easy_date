@@ -21,7 +21,8 @@ class Fig :
 
     def get_fig_boxplot(self):
         fig_plot = go.Figure()
-        for xd, yd, cls in zip(self.__df_boxplot.columns, [self.__df_boxplot[i].to_list() for i in self.__df_boxplot.columns], ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)','rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']):
+        colors = ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)','rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']
+        for xd, yd, cls in zip(self.__df_boxplot.columns, [self.__df_boxplot[i].to_list() for i in self.__df_boxplot.columns], colors):
                 fig_plot.add_trace(go.Box(
                 y=yd,
                 name=xd,
@@ -50,7 +51,7 @@ class Fig :
                 b=80,
                 t=100,
             ),
-            paper_bgcolor='rgb(243, 243, 243)',
+            paper_bgcolor='rgb(0,0,0)',
             plot_bgcolor='rgb(243, 243, 243)',
             showlegend=False
         )
