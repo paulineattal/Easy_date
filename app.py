@@ -118,7 +118,7 @@ PageContent = dbc.Container([
             html.P("Explication du modèle prédictif",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
         html.Div([
             html.P("Boosting",style={'color': 'pink','fontSize': 20}),
-            html.P(["Le boosting est une méthode qui permet de transformer les apprenants faibles en apprenants forts. La procédure commence par former des arbres de décision. Chaque observation  se voit attribuer un poids égal", html.Br(),                
+            html.P(["Le boosting est une méthode qui permet de transformer les apprenants faibles en apprenants forts. La procédure commence par former des arbres de décision. Chaque observation  se voit attribuer un poids égal.", html.Br(),                
                     "Après avoir analysé le premier arbre, on augmente le poids de chaque observation difficle à classer et on diminue le poids des observations qui n'ont pas posé de problème.",html.Br(),
                     "Le prochain arbre est donc construit sur les données pondérées ce qui améliore les prévisions du premier arbre."]),
                 ]),
@@ -126,7 +126,7 @@ PageContent = dbc.Container([
         html.Div([
             html.P("Boosting de gradient",style={'color': 'pink','fontSize': 20}),
             html.P(["Le boosting de gradient est une catégorie de boosting.", html.Br(),
-                    "Le gradient boosting est une technique appréciée car pratique. Cette technique n’est pas exigeante en termes de préparation des variables, il n’y a pas de normalisation ou de standardisation des variables à réaliser, pas de recodage complexe à mettre en place. On peut aller directement à l’essentiel. Le gradient boosting est aussi très populaire car il est souvent utilisé dans des compétitions d’algorithmes et reconnu pour l’obtention de bons résultats. Le gradient boosting nous permet de faire de la régression, mais est aussi utilisé pour de la classification.",html.Br(),
+                    "Le boosting de gradient est une technique appréciée car pratique. Cette technique n’est pas exigeante en termes de préparation des variables, il n’y a pas de normalisation ou de standardisation des variables à réaliser, pas de recodage complexe à mettre en place. On peut aller directement à l’essentiel. Le gradient boosting est aussi très populaire car il est souvent utilisé dans des compétitions d’algorithmes et reconnu pour l’obtention de bons résultats. Le gradient boosting nous permet de faire de la régression, mais est aussi utilisé pour de la classification.",html.Br(),
                     "Il repose fortement sur la prédiction que le prochain modèle réduira les erreurs de prédiction lorsqu’il sera mélangé avec les précédents. L’idée principale est d’établir des résultats cibles pour le prochain modèle afin de minimiser les erreurs.",html.Br(),
                     ""])]),
         html.Div([html.Img(src=r'assets/boosting_gradient.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
@@ -138,8 +138,13 @@ PageContent = dbc.Container([
         html.Div([html.Img(src=r'assets/hyperparam.png', alt='image', height="250")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
         html.Div([
             html.P("Matrice de confusion",style={'color': 'pink','fontSize': 20}),
-            html.P([""
-                    ,html.Br(),
+            html.P(["Ici nous avons représenté la matrice de confusion du modèle de prédiction retenue, sur les données connues des anciennes sesion de speed dating.", html.Br(),
+                    "La modalité positive ici est le non match.",html.Br(),
+                    "Des indicateurs intéressants que nous avons calculé pour la fiabilité de prédiction de notre modèle sont :",html.Br(),
+                    "score de bonnes prédiction",html.Br(),
+                    "f1 score",html.Br(),
+                    "accuracy...",html.Br(),
+                    html.Br(),
                     ""])]),
         html.Div([html.Img(src=r'assets/matrice.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'})
     ], id="Modelisation-tab"),
