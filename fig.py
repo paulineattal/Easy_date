@@ -14,10 +14,10 @@ class Fig :
         self.__df_word = df_word
         
     def get_fig_sunburst_men(self):
-        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income', template="plotly_dark").update_layout(margin=dict(l=5, r=5, t=50, b=5))
+        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
     
     def get_fig_sunburst_women(self):
-        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income', template="plotly_dark").update_layout(margin=dict(l=5, r=5, t=50, b=5))
+        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
 
     def get_fig_boxplot(self):
         fig_plot = go.Figure()
@@ -51,7 +51,7 @@ class Fig :
                 b=80,
                 t=100,
             ),
-            paper_bgcolor='rgb(0,0,0)',
+            paper_bgcolor='rgb(39, 43, 48)',
             plot_bgcolor='rgb(243, 243, 243)',
             showlegend=False
         )

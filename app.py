@@ -195,8 +195,8 @@ def render_tab_content(active_tab):
 def update_graph(xInput, yInput, colorInput):
     fig = px.scatter(df, x=xInput,
                      y=yInput,
-                     color=colorInput, 
-                     template="plotly_dark")
+                     color=colorInput)
+    fig.update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
     return fig
 
 @app.callback(Output("download-pred", 'data'),
