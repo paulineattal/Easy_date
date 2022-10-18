@@ -20,7 +20,7 @@ import gunicorn
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], title='EasyDate Michael Scott Team')
-server = app.server 
+server = app.server
 
 df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
 pds = PrepDatas(df_graphes)
@@ -178,7 +178,7 @@ PageContent = dbc.Container([
             },
             id='uploadData',
         ),
-        html.Div(id='outputPrediction'),
+        dcc.Download(id="download-pred"),
         html.Div([
             html.H5("Formulaire de prédiction"),
             dcc.Input(id="int_corr", type="number", placeholder="Score d'interet commun ('int_corr')", style=({"width":"72%", "margin":"5px"})),
@@ -217,7 +217,6 @@ def render_tab_content(active_tab):
             return off, off, off, on
     return "No tab selected"
 
-
 @app.callback(Output('GraphStat_1', 'figure'),
     [Input('xInput', 'value'), Input('yInput', 'value'), Input('colorInput', 'value')])
 def update_graph(xInput, yInput, colorInput):
@@ -227,18 +226,15 @@ def update_graph(xInput, yInput, colorInput):
                      template="plotly_dark")
     return fig
 
-@app.callback(Output('outputPrediction', 'children'),
+@app.callback(Output("download-pred", 'data'),
               Input('uploadData', 'contents'))
 def predFromFile(contents):
     if contents is not None:
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
         test = pd.read_csv(io.StringIO(decoded.decode('utf-8')))[['int_corr', 'age_o', 'age', 'attr_o', 'attr1_1', 'fun_o', 'fun1_1', 'income']]
-        predictions = loaded_model.predict(test)
-        children = [
-            html.P(predictions)
-        ]
-        return children
+        predictions = pd.Series(loaded_model.predict(test))
+        return dcc.send_data_frame(predictions.to_csv, "predictions.csv")
 
 @app.callback(
     [Output('predictionFromForm', 'children'), Output("renderPrediction", "style")],
