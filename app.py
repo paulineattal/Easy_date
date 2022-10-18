@@ -1,25 +1,31 @@
+#Import des modules crées
 from prepdatas import PrepDatas
 from fig import Fig
 
+#Import des modules de base
 import pandas as pd
 
+#Import des modules Dash
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 
+#Import des modules de graphiques
 import plotly.express as px
 
+#Import des modules de gestion de fichier
 import pickle
 import base64
 import io
 
+#Import du module pour déploiement sur Heroku
 import gunicorn
 
-
+#Création de l'interface
 app = Dash(__name__, external_stylesheets=[dbc.themes.SLATE], title='EasyDate Michael Scott Team')
 server = app.server
 
-
+#Création des Dataframes
 df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
 pds = PrepDatas(df_graphes)
 pds.build_df_graphes()
@@ -29,6 +35,7 @@ df_women = pds.get_df_women()
 df_boxplot = pds.get_df_boxplot()
 df_word = pds.get_df_word()
 
+#Rennomage des colonnes pour les filtres
 df_dropdown_x_y = df[['int_corr', 'age_o','attr_o', 'sinc_o','intel_o', 'fun_o', 'amb_o', 'shar_o', 
                       'age', 'imprace', 'imprelig', 'income', 'sports', 'tvsports', 'exercise', 
                       'dining', 'museums','art', 'hiking', 'gaming', 'clubbing', 'reading', 'tv', 
@@ -39,23 +46,23 @@ df_dropdown_x_y = df[['int_corr', 'age_o','attr_o', 'sinc_o','intel_o', 'fun_o',
                  "income":"salaire","exphappy":"retour_experience", "expnum":"confiance_experience",
                  'attr1_1':"score_attirance_p2", 'sinc1_1':"score_sincerite_p2", 'intel1_1':"score_intelligence_p2", 'fun1_1':"score_fun_p2", 'amb1_1':"score_ambition_p2", 'shar1_1':"score_interet_commun_p2"})
 
-
 df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd', 
                       'race', 'goal', 'date', 'go_out']].rename(columns={"gender":"sexe","wave":"vague",
                                                                                 "race_o":"origine_p1","goal":"objectif",
                                                                                 "field_cd":"code_carriere","race":"origine_p2",
                                                                                 "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
 
+#Création des graphiques Statiques
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
 fig_sunburst_men = fig.get_fig_sunburst_men()
 fig_sunburst_women = fig.get_fig_sunburst_women()
 fig_boxplot = fig.get_fig_boxplot()
 fig.fig_words()
 
-
+#Chargement du modele de prediction
 loaded_model = pickle.load(open("model/model.pickle.dat", 'rb'))
 
-#Menu
+#Menu de l'interface
 TABPANEL = dbc.Container([
     html.H1("AI Match X Easy Date", style=({"margin":"5px","text-align":"center"})),
     html.Hr(),
@@ -71,10 +78,10 @@ TABPANEL = dbc.Container([
     )
 ])
         
-#Contenu
+#Contenu du 'corps'
 PageContent = dbc.Container([
 
-    #Accueil
+    #Page Accueil statique
     html.Div([
         html.Div(
             html.P("Bienvenue sur l'application AI Match X Easy Date",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 30})),
@@ -96,6 +103,7 @@ PageContent = dbc.Container([
     html.Div([
         html.H4("Graphique général pour l'exploration des données selon chaque variables", style=({"margin":"15px","text-align":"center"})),
         html.Div([
+            #Selecteurs des variables du graphique
             dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="age", style=({"width":"100%", "padding":"5px"})),
             dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="income", style=({"width":"100%", "padding":"5px"})),
             dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df_dropdown_mod.columns], value="gender", style=({"width":"100%", "padding":"5px"}))
@@ -103,16 +111,19 @@ PageContent = dbc.Container([
         dcc.Graph(id="GraphStat_1", style=({"width":"100%", "margin":"5px"})),
         html.H4("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"15px","text-align":"center"})),
         html.Div([
+            #Sunburst
             dcc.Graph(figure=fig_sunburst_men, style=({"width":"50%", "margin":"5px"})),
             dcc.Graph(figure=fig_sunburst_women, style=({"width":"50%", "margin":"5px"})),
         ], id="DivSunBurst", style=({"display":"flex"})),
+        #Boxplot
         html.H4("Boxplot de l'importance accordée au différents critères demandés", style=({"margin":"15px","text-align":"center"})),
         dcc.Graph(figure=fig_boxplot, style=({"width":"100%", "margin":"5px"})),
+        #Nuage de mots
         html.H4("Nuage de mot de l'importance accordées au différentes activités demandées", style=({"margin":"15px","text-align":"center"})),
         html.Img(src=r'assets/word.png', alt='image', style=({"display":"block","margin-left":"auto","margin-right":"auto","margin-top":"5px"})),
     ], id="Statistique-tab"),
 
-    #Page Modélisation
+    #Page Modélisation Statique
     html.Div([
         html.Div(
             html.P("Explication du modèle prédictif",style={'textAlign': 'center','color': 'pink','fontSize': 30})),
@@ -152,24 +163,16 @@ PageContent = dbc.Container([
     #Page prédiction
     html.Div([
         html.H5("Fichier de prédiction", style=({"margin-top":"5px"})),
+        #Prediction par fichier
         dcc.Upload(
             html.Div([
                 'Drag and Drop or ',
                 html.A('Select Files')
-            ]),
-            style={
-                'width': '100%',
-                'height': '100px',
-                'lineHeight': '60px',
-                'borderWidth': '1px',
-                'borderStyle': 'dashed',
-                'borderRadius': '5px',
-                'textAlign': 'center',
-                'margin': '10px'
-            },
+            ]),style={'width': '100%','height': '100px','lineHeight': '60px','borderWidth': '1px','borderStyle': 'dashed','borderRadius': '5px','textAlign': 'center','margin': '10px'},
             id='uploadData',
         ),
         dcc.Download(id="download-pred"),
+        #Prediction par formulaire
         html.Div([
             html.H5("Formulaire de prédiction"),
             dcc.Input(id="int_corr", type="number", placeholder="Score d'interet commun ('int_corr')", style=({"width":"72%", "margin":"5px"})),
@@ -182,6 +185,7 @@ PageContent = dbc.Container([
             dcc.Input(id="income", type="number", placeholder="Revenu du participant ('income')", style=({"width":"72%", "margin":"5px"})),
             html.Div(html.Button('Valider', id='validFormPredict', style=({"border": "2px solid #fff", "width":"20%", "margin-top":"5px"})))
         ], id="formPrediction"),
+        #Résultat
         html.Div([
             html.H5("Prédiction", style=({"margin-top":"5px"})),
             html.P(id="predictionFromForm", style=({"margin-top":"5px"}))
@@ -189,11 +193,14 @@ PageContent = dbc.Container([
     ], id="Prediction-tab")
 ])
 
-#Apparence
+#Rendus de l'application
 app.layout = html.Div([TABPANEL, PageContent])
 
+#Changement de page
 @app.callback([Output("Accueil-tab", "style"), Output("Statistique-tab", "style"), Output("Modelisation-tab", "style"), Output("Prediction-tab", "style")],
               [Input("tabPanel","active_tab")])
+
+#On change le style display de chaque div pour l'afficher ou la masquer
 def render_tab_content(active_tab):
     on = {"display":"block"}
     off = {"display":"none"}
@@ -208,8 +215,11 @@ def render_tab_content(active_tab):
             return off, off, off, on
     return "No tab selected"
 
+#Changement de selecteur pour le graphique
 @app.callback(Output('GraphStat_1', 'figure'),
     [Input('xInput', 'value'), Input('yInput', 'value'), Input('colorInput', 'value')])
+
+#On met à jour le graphique avec les nouvelles données entrées
 def update_graph(xInput, yInput, colorInput):
     fig = px.scatter(df, x=xInput,
                      y=yInput,
@@ -217,8 +227,11 @@ def update_graph(xInput, yInput, colorInput):
     fig.update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
     return fig
 
+#Reponse a l'importation d'un fichier et prediction
 @app.callback(Output("download-pred", 'data'),
               Input('uploadData', 'contents'))
+
+#Chargement, encodage, lecture et prediction
 def predFromFile(contents):
     if contents is not None:
         content_type, content_string = contents.split(',')
@@ -227,12 +240,15 @@ def predFromFile(contents):
         predictions = pd.Series(loaded_model.predict(test))
         return dcc.send_data_frame(predictions.to_csv, "predictions.csv")
 
+#Enregistrement du formulaire et prediction
 @app.callback(
     [Output('predictionFromForm', 'children'), Output("renderPrediction", "style")],
     Input('validFormPredict', 'n_clicks'),
     [State('int_corr', 'value'), State('age_o', 'value'), State('age', 'value'), State('attr_o', 'value'), State('attr1_1', 'value'),
     State('fun_o', 'value'), State('fun1_1', 'value'), State('income', 'value')]
 )
+
+#Passages des valeurs du formulaire en Dataframe et prediction avant affichage du résultat
 def predFromForm(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1, income):
     if n_clicks is None:
         raise PreventUpdate
@@ -248,5 +264,6 @@ def predFromForm(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1,
         ]
         return children, {"display":"block"}
 
+#Lancement de l'application
 if __name__ == '__main__':
     app.run_server(debug=True)
