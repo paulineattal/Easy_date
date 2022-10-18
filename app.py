@@ -1,4 +1,5 @@
 from prepdatas import PrepDatas
+from fig import Fig
 
 import pandas as pd
 
@@ -7,20 +8,17 @@ import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 
 import plotly.express as px
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 
 import pickle
 import base64
 import io
 
-from wordcloud import WordCloud
-
 import gunicorn
 
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], title='EasyDate Michael Scott Team')
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], title='EasyDate Michael Scott Team')
 server = app.server
+
 
 df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
 pds = PrepDatas(df_graphes)
@@ -31,48 +29,12 @@ df_women = pds.get_df_women()
 df_boxplot = pds.get_df_boxplot()
 df_word = pds.get_df_word()
 
-fig_plot = go.Figure()
-for xd, yd, cls in zip(df_boxplot.columns, [df_boxplot[i].to_list() for i in df_boxplot.columns], ['rgba(240, 248, 255, 1 )', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)','rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)']):
-        fig_plot.add_trace(go.Box(
-            y=yd,
-            name=xd,
-            boxpoints='all',
-            jitter=0.5,
-            whiskerwidth=0.2,
-            fillcolor=cls,
-            marker_size=2
-                )
-        )
-fig_plot.update_layout(
-    title='Importance de plusieurs critères lors du choix d\'un partenaire',
-    yaxis=dict(
-        autorange=True,
-        showgrid=True,
-        zeroline=True,
-        dtick=5,
-        gridcolor='rgb(255, 255, 255)',
-        gridwidth=1,
-        zerolinecolor='rgb(255, 255, 255)',
-        zerolinewidth=2,
-    ),
-    margin=dict(
-        l=40,
-        r=30,
-        b=80,
-        t=100,
-    ),
-    paper_bgcolor='rgb(243, 243, 243)',
-    plot_bgcolor='rgb(243, 243, 243)',
-    showlegend=False
-)
+fig = Fig(df,df_men,df_women,df_boxplot,df_word)
+fig_sunburst_men = fig.get_fig_sunburst_men()
+fig_sunburst_women = fig.get_fig_sunburst_women()
+fig_boxplot = fig.get_fig_boxplot()
+fig.fig_words()
 
-wc = WordCloud(width=800, height=400, max_words=200).generate_from_frequencies(df_word)
-
-plt.figure(figsize=(10, 10))
-plt.imshow(wc, interpolation='bilinear')
-plt.axis('off')
-plt.margins(0,0)
-plt.savefig("./assets/word.png", bbox_inches = 'tight', pad_inches = 0)
 
 loaded_model = pickle.load(open("model/model.pickle.dat", 'rb'))
 
@@ -124,17 +86,11 @@ PageContent = dbc.Container([
         dcc.Graph(id="GraphStat_1", style=({"width":"100%", "margin":"5px"})),
         html.H6("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"5px","text-align":"center"})),
         html.Div([
-            dcc.Graph(figure=px.sunburst(df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],
-                    values='income', color='income', template="plotly_dark").update_layout(
-                        margin=dict(l=5, r=5, t=50, b=5)
-                    ), style=({"width":"50%", "margin":"5px"})),
-            dcc.Graph(figure=px.sunburst(df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],
-                    values='income', color='income', template="plotly_dark").update_layout(
-                        margin=dict(l=5, r=5, t=50, b=5)
-                    ), style=({"width":"50%", "margin":"5px"})),
+            dcc.Graph(figure=fig_sunburst_men, style=({"width":"50%", "margin":"5px"})),
+            dcc.Graph(figure=fig_sunburst_women, style=({"width":"50%", "margin":"5px"})),
         ], id="DivSunBurst", style=({"display":"flex"})),
         html.H6("Boxplot de l'importance accordée au différents critères demandés", style=({"margin":"5px","text-align":"center"})),
-        dcc.Graph(figure=fig_plot, style=({"width":"100%", "margin":"5px"})),
+        dcc.Graph(figure=fig_boxplot, style=({"width":"100%", "margin":"5px"})),
         html.H6("Nuage de mot de l'importance accordées au différentes activités demandées", style=({"margin":"5px","text-align":"center"})),
         html.Img(src=r'assets/word.png', alt='image', style=({"display":"block","margin-left":"auto","margin-right":"auto","margin-top":"5px"})),
     ], id="Statistique-tab"),
@@ -249,11 +205,11 @@ def predFromForm(n_clicks, int_corr, age_o, age, attr_o, attr1_1, fun_o, fun1_1,
         test = pd.DataFrame({"int_corr":[int_corr],"age_o":[age_o],"age":[age],"attr_o":[attr_o],"attr1_1":[attr1_1],"fun_o":[fun_o],"fun1_1":[fun1_1],"income":[income]})
         predictions = loaded_model.predict(test)
         if predictions == [0]:
-            predictions = "Pas match :("
+            predictions = "💔"
         elif predictions == [1]:
-            predictions = "Match :D !"
+            predictions = "❤️"
         children = [
-            html.P(predictions, style=({"margin-top":"5px"}))
+            html.H1(predictions, style=({"margin-top":"5px"}))
         ]
         return children, {"display":"block"}
 
