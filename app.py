@@ -33,18 +33,18 @@ df_dropdown_x_y = df[['int_corr', 'age_o','attr_o', 'sinc_o','intel_o', 'fun_o',
                       'age', 'imprace', 'imprelig', 'income', 'sports', 'tvsports', 'exercise', 
                       'dining', 'museums','art', 'hiking', 'gaming', 'clubbing', 'reading', 'tv', 
                       'theater','movies', 'concerts', 'music', 'shopping', 'yoga', 'exphappy', 
-                      'expnum','attr1_1', 'sinc1_1', 'intel1_1', 'fun1_1', 'amb1_1', 'shar1_1']].rename(columns={"int_corr":"score d'interet commun", "age_o":"age p1","attr_o":"score attirance p1", 
-                 "sinc_o":"score sincerite p1","intel_o":"score intelligence p1", "fun_o":"score fun p1","amb_o":"score ambition p1",
-                 "shar_o":"score interet commun p1", "imprace":"importance origine commune","imprelig":"importance religion commune",
-                 "income":"salaire","exphappy":"retour experience", "expnum":"confiance experience",
-                 'attr1_1':"score attirance p2", 'sinc1_1':"score sincerite p2", 'intel1_1':"score intelligence p2", 'fun1_1':"score fun p2", 'amb1_1':"score ambition p2", 'shar1_1':"score interet commun p2"})
+                      'expnum','attr1_1', 'sinc1_1', 'intel1_1', 'fun1_1', 'amb1_1', 'shar1_1']].rename(columns={"int_corr":"score_interet_commun", "age_o":"age_p1","attr_o":"score_attirance_p1", 
+                 "sinc_o":"score_sincerite_p1","intel_o":"score_intelligence_p1", "fun_o":"score_fun_p1","amb_o":"score_ambition_p1",
+                 "shar_o":"score_interet_commun_p1", "imprace":"importance_origine_commune","imprelig":"importance_religion_commune",
+                 "income":"salaire","exphappy":"retour_experience", "expnum":"confiance_experience",
+                 'attr1_1':"score_attirance_p2", 'sinc1_1':"score_sincerite_p2", 'intel1_1':"score_intelligence_p2", 'fun1_1':"score_fun_p2", 'amb1_1':"score_ambition_p2", 'shar1_1':"score_interet_commun_p2"})
 
 
 df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd', 
                       'race', 'goal', 'date', 'go_out']].rename(columns={"gender":"sexe","wave":"vague",
-                                                                                "race_o":"origine p1","goal":"objectif",
-                                                                                "field_cd":"code carriere","race":"origine p2",
-                                                                                "date":"freq rdv amoureux","go_out":"freq sortie"})
+                                                                                "race_o":"origine_p1","goal":"objectif",
+                                                                                "field_cd":"code_carriere","race":"origine_p2",
+                                                                                "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
 
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
 fig_sunburst_men = fig.get_fig_sunburst_men()
@@ -97,8 +97,8 @@ PageContent = dbc.Container([
         html.H4("Graphique général pour l'exploration des données selon chaque variables", style=({"margin":"15px","text-align":"center"})),
         html.Div([
             dcc.Dropdown(id="xInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="age", style=({"width":"100%", "padding":"5px"})),
-            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="salaire", style=({"width":"100%", "padding":"5px"})),
-            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df_dropdown_mod.columns], value="sexe", style=({"width":"100%", "padding":"5px"}))
+            dcc.Dropdown(id="yInput", options=[{"label":name,"value":name} for name in df_dropdown_x_y.columns], value="income", style=({"width":"100%", "padding":"5px"})),
+            dcc.Dropdown(id="colorInput", options=[{"label":name,"value":name} for name in df_dropdown_mod.columns], value="gender", style=({"width":"100%", "padding":"5px"}))
         ], id="DivFilter", style=({"display":"flex"})),
         dcc.Graph(id="GraphStat_1", style=({"width":"100%", "margin":"5px"})),
         html.H4("Représentation graphique des centres d'interêt par ages et revenus", style=({"margin":"15px","text-align":"center"})),
