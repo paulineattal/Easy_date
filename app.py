@@ -125,10 +125,23 @@ PageContent = dbc.Container([
         html.Div([html.Img(src=r'assets/boosting.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
         html.Div([
             html.P("Boosting de gradient",style={'color': 'pink','fontSize': 20}),
-            html.P(["Le boosting de gradient est une catégorie de boosting.", html.Br(),                
+            html.P(["Le boosting de gradient est une catégorie de boosting.", html.Br(),
+                    "Le gradient boosting est une technique appréciée car pratique. Cette technique n’est pas exigeante en termes de préparation des variables, il n’y a pas de normalisation ou de standardisation des variables à réaliser, pas de recodage complexe à mettre en place. On peut aller directement à l’essentiel. Le gradient boosting est aussi très populaire car il est souvent utilisé dans des compétitions d’algorithmes et reconnu pour l’obtention de bons résultats. Le gradient boosting nous permet de faire de la régression, mais est aussi utilisé pour de la classification.",html.Br(),
                     "Il repose fortement sur la prédiction que le prochain modèle réduira les erreurs de prédiction lorsqu’il sera mélangé avec les précédents. L’idée principale est d’établir des résultats cibles pour le prochain modèle afin de minimiser les erreurs.",html.Br(),
                     ""])]),
-        html.Div([html.Img(src=r'assets/boosting_gradient.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'})
+        html.Div([html.Img(src=r'assets/boosting_gradient.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        html.Div([
+            html.P("Hyperparametres du Boosting de gradient",style={'color': 'pink','fontSize': 20}),
+            html.P(["Un hyperparamètre est un paramètre qui ne pourra pas être appris ou déduit par l’algorithme. Il doit être choisi et testé par le développeur. Le but est donc de développer plusieurs modèles avec différentes configuration de paramètres pour chaque méthode de régression. Ensuite il faudra calculer des indicateurs de performance pour chaque modèle, et les comparer afin de choisir le modèle qui fonctionne le mieux sur nos données."
+                    ,html.Br(),
+                    ""])]),
+        html.Div([html.Img(src=r'assets/hyperparam.png', alt='image', height="250")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        html.Div([
+            html.P("Matrice de confusion",style={'color': 'pink','fontSize': 20}),
+            html.P([""
+                    ,html.Br(),
+                    ""])]),
+        html.Div([html.Img(src=r'assets/matrice.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'})
     ], id="Modelisation-tab"),
 
     #Page prédiction
