@@ -13,4 +13,5 @@ Plusieurs fichiers sont spécifiques et necessaires pour le fonctionnement de l'
 `/assets` contient le CSS du dash <br>
 `/models` contient le modele de prediction des match et le code de selection du meilleur modele <br>
 `/datas` contient tous les fichiers CSV utils pour les graphes et les predictions <br>
+`/documentation` contient les fichiers de documentations technique et fonctionnelle de l'application <br>
 

@@ -16,8 +16,11 @@ import io
 
 from wordcloud import WordCloud
 
+import gunicorn
+
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], title='EasyDate Michael Scott Team')
+server = app.server 
 
 df_graphes = pd.read_csv("./datas/trainGraph.csv", sep=",")
 pds = PrepDatas(df_graphes)
