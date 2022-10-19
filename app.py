@@ -50,7 +50,8 @@ df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd',
                       'race', 'goal', 'date', 'go_out']].rename(columns={"gender":"sexe","wave":"vague",
                                                                                 "race_o":"origine_p1","goal":"objectif",
                                                                                 "field_cd":"code_carriere","race":"origine_p2",
-                                                                                "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
+                                                                               "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
+
 
 #Création des graphiques Statiques
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
