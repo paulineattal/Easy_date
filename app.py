@@ -81,23 +81,25 @@ TABPANEL = dbc.Container([
 #Contenu du 'corps'
 PageContent = dbc.Container([
 
-    #Page Accueil statique
-    html.Div([
+     #Accueil
+    html.Div(id="Accueil-tab", children=[
+
         html.Div(
-            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 30})),
+            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 30})), 
         html.Div([
-            html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
-            html.P(["Easy Date est une société d'événementiel qui organise des speed dating. Lors des 17 vagues de speed dating, 452 célibataires ont tenté de trouver l'amour!", html.Br(),
-                    "De nombreuses données ont été récoltés pendant ces speed dating et Easy Date voudrait un modèle prédictif pour savoir si deux personnes sont compatibles prior à leur rencontre "], style={'textAlign': 'left'}),
-            html.Img(src=r'assets/logo.png', alt='image', width="200"),
-        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'}),
+            html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20})]),
+        dbc.Row([
+            dbc.Col(html.Img(src=r'assets/logo.png', alt='image', width="200"), width=2),
+            dbc.Col(html.P(["Easy Date est une société d'événementiel qui organise des speed dating. Lors des 17 vagues de speed dating, 452 célibataires ont tenté de trouver l'amour!", html.Br(),
+                    "De nombreuses données ont été récoltés pendant ces speed dating et Easy Date voudrait un modèle prédictif pour savoir si deux personnes sont compatibles prior à leur rencontre."], style={'textAlign': 'left'}), width=10),
+                ]),
         html.Div([
-            html.P("AI Match",style={'textAlign': 'left','color': 'pink','fontSize': 20}),
-            html.P(["AI Match est une équipe formée de 4 data scientists spécialisés dans les modèles prédictifs.", html.Br(),
-                    " Grâce aux données nos data scientists ont réussi à répondre à la demande du client."], style={'textAlign': 'left'}),
-            html.Img(src=r'assets/logo2.png', alt='image', width="200"),
-        ],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'right'})
-    ], id="Accueil-tab"),
+            html.P("AI Match",style={'textAlign': 'left','color': 'pink','fontSize': 20})]),
+        dbc.Row([
+            dbc.Col(html.Img(src=r'assets/logo2.png', alt='image', width="180"), width=2),
+            dbc.Col( html.P([html.Br(),"AI Match est une équipe formée de 4 data scientists spécialisés dans les modèles prédictifs.", html.Br(),
+                     " Grâce aux données nos data scientists ont réussi à répondre à la demande du client. Nous allons maintenant pouvoir simplement entrer les variables d'interet dans un formulaire et découvrir si le grand amour est au rendez vous "], style={'textAlign': 'left'}),width=10)])
+                ]),        
 
     #Page Statistique
     html.Div([
