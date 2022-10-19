@@ -161,7 +161,7 @@ PageContent = dbc.Container([
                     ""])]),
         html.Div([html.Img(src=r'assets/matrice.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
         html.Div([
-            html.P("Matrice de confusion",style={'color': 'pink','fontSize': 20}),
+            html.P("Selection de variables",style={'color': 'pink','fontSize': 20}),
             html.P([
                     "Nous avons effectues une selection de variables pour alleger l'apprentissage du modele.",html.Br(),
                     "Voici les variables les plus utiles pour la prediction : ",html.Br(),
