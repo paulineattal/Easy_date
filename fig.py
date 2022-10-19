@@ -14,10 +14,10 @@ class Fig :
         self.__df_word = df_word
         
     def get_fig_sunburst_men(self):
-        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
+        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='expnum', color='expnum').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
     
     def get_fig_sunburst_women(self):
-        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='income', color='income').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
+        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='expnum', color='expnum').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
 
     def get_fig_boxplot(self):
         fig_plot = go.Figure()
@@ -34,7 +34,6 @@ class Fig :
                     )
             )
         fig_plot.update_layout(
-            title='Importance de plusieurs critères lors du choix d\'un partenaire',
             yaxis=dict(
                 autorange=True,
                 showgrid=True,
