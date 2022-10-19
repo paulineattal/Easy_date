@@ -11,8 +11,8 @@ Plusieurs fichiers sont spécifiques et necessaires pour le fonctionnement de l'
 `requirements.txt` contenannt les modules python qui seront installés lors de la construction de l'application <br>
 `runtime.txt` indique à Heroku (le serveur HTTP Gunicorn) quelle version de Python utiliser <br>
 `Procfile` indique à Heroku quel type de processus va s'exécuter (processus Web Gunicorn) et le point d'entrée de l'application Python (app.py) <br>
-`/assets` contient le CSS du dash <br>
+`/assets` contient le des images pour l'application Dash <br>
 `/models` contient le modele de prediction des match et le code de selection du meilleur modele <br>
-`/datas` contient tous les fichiers CSV utils pour les graphes et les predictions <br>
+`/datas` contient tous les fichiers CSV utils pour les graphes et les predictions ainsi que le script python de nettoyage des données et de statistique descriptives <br>
 `/documentation` contient les fichiers de documentations technique et fonctionnelle de l'application <br>
 
