@@ -52,6 +52,13 @@ df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd',
                                                                                 "field_cd":"code_carriere","race":"origine_p2",
                                                                                "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
 
+df = df.rename(columns={"int_corr":"score_interet_commun", "age_o":"age_p1","attr_o":"score_attirance_p1", 
+                "sinc_o":"score_sincerite_p1","intel_o":"score_intelligence_p1", "fun_o":"score_fun_p1","amb_o":"score_ambition_p1",
+                "shar_o":"score_interet_commun_p1", "imprace":"importance_origine_commune","imprelig":"importance_religion_commune",
+                "income":"salaire","exphappy":"retour_experience", "expnum":"confiance_experience",
+                'attr1_1':"score_attirance_p2", 'sinc1_1':"score_sincerite_p2", 'intel1_1':"score_intelligence_p2", 'fun1_1':"score_fun_p2",
+                'amb1_1':"score_ambition_p2", 'shar1_1':"score_interet_commun_p2","gender":"sexe","wave":"vague",
+                "race_o":"origine_p1","goal":"objectif", "field_cd":"code_carriere","race":"origine_p2", "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
 
 #Création des graphiques Statiques
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
