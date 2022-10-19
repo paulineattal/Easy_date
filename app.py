@@ -85,7 +85,7 @@ PageContent = dbc.Container([
     html.Div(id="Accueil-tab", children=[
 
         html.Div(
-            html.P("Bienvenue sur l'application AI Match X Easy Date",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 30})), 
+            html.P("AImer avec AImatch",style={'margin':'20px','textAlign': 'center','color': 'pink','fontSize': 40})), 
         html.Div([
             html.P("Easy Date",style={'textAlign': 'left','color': 'pink','fontSize': 20})]),
         dbc.Row([
@@ -154,12 +154,23 @@ PageContent = dbc.Container([
             html.P(["Ici nous avons représenté la matrice de confusion du modèle de prédiction retenue, sur les données connues des anciennes sesion de speed dating.", html.Br(),
                     "La modalité positive ici est le non match.",html.Br(),
                     "Des indicateurs intéressants que nous avons calculé pour la fiabilité de prédiction de notre modèle sont :",html.Br(),
-                    "score de bonnes prédiction",html.Br(),
-                    "f1 score",html.Br(),
-                    "accuracy...",html.Br(),
+                    "precision = vrais positifs/(vrais positifs + faux positifs)",html.Br(),
+                    "rappel = vrais positifs/(vrais positifs + faux negatifs)",html.Br(),
+                    "F1 score = (2 * precision * rappel)/(precision + rappel)",html.Br(),
                     html.Br(),
                     ""])]),
-        html.Div([html.Img(src=r'assets/matrice.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'})
+        html.Div([html.Img(src=r'assets/matrice.png', alt='image', height="400")],style={'marginBottom': 50, 'marginTop': 25,'text-align': 'center'}),
+        html.Div([
+            html.P("Matrice de confusion",style={'color': 'pink','fontSize': 20}),
+            html.P([
+                    "Nous avons effectues une selection de variables pour alleger l'apprentissage du modele.",html.Br(),
+                    "Voici les variables les plus utiles pour la prediction : ",html.Br(),
+                    html.Br(),
+                    ""]),
+            html.P(["['int_corr', 'age_o', 'age', 'attr_o', 'attr1_1', 'fun_o', 'fun1_1', 'income']"],style={'fontSize': 20, 'marginTop': 25,'text-align': 'center'})
+            ])
+        
+        
     ], id="Modelisation-tab"),
 
     #Page prédiction
@@ -226,7 +237,7 @@ def update_graph(xInput, yInput, colorInput):
     fig = px.scatter(df, x=xInput,
                      y=yInput,
                      color=colorInput)
-    fig.update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
+    fig.update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)','font_color':'white'})
     return fig
 
 #Reponse a l'importation d'un fichier et prediction

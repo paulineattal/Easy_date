@@ -14,10 +14,10 @@ class Fig :
         self.__df_word = df_word
         
     def get_fig_sunburst_men(self):
-        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='expnum', color='expnum').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
+        return px.sunburst(self.__df_men, title="Hommes", path=['most_interest', 'goal_cat', 'age_cat'],values='exphappy', color='exphappy').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)', 'font_color':'white'})
     
     def get_fig_sunburst_women(self):
-        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='expnum', color='expnum').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)'})
+        return px.sunburst(self.__df_women, title="Femmes", path=['most_interest', 'goal_cat', 'age_cat'],values='exphappy', color='exphappy').update_layout({'plot_bgcolor':'rgb(39, 43, 48)', 'paper_bgcolor':'rgb(39, 43, 48)','font_color':'white'})
 
     def get_fig_boxplot(self):
         fig_plot = go.Figure()
@@ -44,6 +44,7 @@ class Fig :
                 zerolinecolor='rgb(255, 255, 255)',
                 zerolinewidth=2,
             ),
+            font_color='rgb(255,255,255)',
             margin=dict(
                 l=40,
                 r=30,
@@ -51,7 +52,7 @@ class Fig :
                 t=100,
             ),
             paper_bgcolor='rgb(39, 43, 48)',
-            plot_bgcolor='rgb(243, 243, 243)',
+            plot_bgcolor='rgb(66,73,82)',
             showlegend=False
         )
         return fig_plot
