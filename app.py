@@ -52,7 +52,6 @@ df_dropdown_mod = df[['gender', 'wave', 'round','match', 'race_o', 'field_cd',
                                                                                 "field_cd":"code_carriere","race":"origine_p2",
                                                                                "date":"freq_rdv_amoureux","go_out":"freq_sortie"})
 
-
 #Création des graphiques Statiques
 fig = Fig(df,df_men,df_women,df_boxplot,df_word)
 fig_sunburst_men = fig.get_fig_sunburst_men()
