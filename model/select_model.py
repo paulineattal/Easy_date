@@ -21,7 +21,6 @@ from sklearn.metrics import mean_squared_error, recall_score, f1_score, make_sco
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 
-
 data = pd.read_csv("./trainClean.csv", sep=",")
 
 X_sub = pd.read_csv("./submissionsClean.csv", sep=',')
@@ -73,7 +72,8 @@ params_modeles = [
 "MLPRegressor__max_iter": [100,200,300,500],
 "MLPRegressor__activation" : ['relu','logistic','tanh'],
 "MLPRegressor__hidden_layer_sizes":[(2,), (4,),(2,2),(4,4),(4,2),(10,10),(2,2,2)]}
-      ]
+]
+
 modeles_list = [
     DecisionTreeClassifier(),
     LogisticRegression(),
@@ -83,7 +83,7 @@ modeles_list = [
     SVC(),
     OneVsRestClassifier(SVC()),
     Pipeline([('scaler', StandardScaler()),('MLPRegressor', MLPRegressor())])
-    ]
+]
 
 
 
